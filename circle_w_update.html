@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    
+  </head>
+
+  <body>
+
+    <canvas></canvas>
+
+    <script >
+      
+      let can = document.querySelector('canvas');
+
+      can.setAttribute('style', 'background-color: #aa80ff');
+
+      let ctx = can.getContext('2d');
+
+      let resizeCanvas = () => {
+        can.width = window.innerWidth - 20;
+        can.height = window.innerHeight - 20;
+      };
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      class Circle {
+
+        constructor(x, y, velX, velY, r, color) {
+          this.x = x;
+          this.y = y;
+          this.vel = {
+            x: velX,
+            y: velY,
+          };
+          this.r = r;
+          this.color = color;
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.closePath();
+        }
+
+        update() {
+          if (this.x >= can.width - this.r) {
+            this.x = can.width - this.r;
+            this.vel.x *= -1;
+          }
+          if (this.x <= this.r) {
+            this.x = this.r;
+            this.vel.x *= -1;
+          }
+          if (this.y >= can.height - this.r) {
+            this.y = can.height - this.r;
+            this.vel.y *= -1;
+          }
+          if (this.y <= this.r) {
+            this.y = this.r;
+            this.vel.y *= -1;
+          }
+
+          this.x += this.vel.x;
+          this.y += this.vel.y;
+
+          this.draw();
+        }  
+      }
+
+      let circles = [];
+
+      for (let i = 0; i < 50; i++) {
+        circles.push(
+          new Circle(
+            Math.random() * can.width,
+            Math.random() * can.height,
+            Math.random() * 10,
+            Math.random() * 10,
+            Math.random() * 30,
+            `rgba(
+              ${Math.random() * 255},
+              ${Math.random() * 255},
+              ${Math.random() * 255}, 
+              ${Math.random()}
+              )`
+          )
+        );
+      }
+
+      let animate = () => {
+
+        ctx.clearRect(0, 0, can.width, can.height);
+        circles.forEach((circle) => {
+        circle.update();
+        });
+        requestAnimationFrame(() => {
+          animate();
+        });
+      };
+
+      animate();
+
+    </script>
+  </body>
+</html>
